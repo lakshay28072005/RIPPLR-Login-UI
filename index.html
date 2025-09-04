@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIPPLRWXT - Next Day, No Delay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .view {
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .active-view {
+            position: relative;
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .hidden-view {
+            transform: translateX(100px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .tagline {
+            color: #7f8c8d;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        .welcome-text {
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .instruction {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid #e6e9ed;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .input-error {
+            border-color: #e74c3c !important;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .remember {
+            display: flex;
+            align-items: center;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 8px;
+            accent-color: #3498db;
+        }
+        
+        .forgot-password {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .sign-in-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .sign-in-btn:hover {
+            background: #2980b9;
+        }
+        
+        .back-to-login {
+            color: #7f8c8d;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .back-to-login i {
+            margin-right: 8px;
+        }
+        
+        .back-to-login:hover {
+            color: #3498db;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            font-size: 14px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 20px;
+            }
+            
+            .options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .forgot-password {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login View -->
+        <div class="view active-view" id="login-view">
+            <div class="header">
+                <div class="logo">RIPPLR</div>
+                <div class="tagline">No Delay</div>
+            </div>
+            
+            <div class="login-card">
+                <h1 class="welcome-text">Welcome</h1>
+                <p class="instruction">Please enter your details.</p>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="user-id">User id</label>
+                        <div class="input-with-icon">
+                            <i class="input-icon fas fa-user"></i>
+                            <input type="text" id="user-id" placeholder="anjali.admin@ripplr.com" autocomplete="off">
+                        </div>
+                        <div class="error-message" id="user-id-error">Please enter a valid email address</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input type="password" id="password" placeholder="****">
+                        </div>
+                        <div class="error-message" id="password-error">Please enter your password</div>
+                    </div>
+                    
+                    <div class="options">
+                        <div class="remember">
+                            <input type="checkbox" id="remember-me">
+                            <label for="remember-me">Remember me</label>
+                        </div>
+                        <a class="forgot-password" id="forgot-password-link">Forgot password</a>
+                    </div>
+                    
+                    <button type="submit" class="sign-in-btn">Sign in</button>
+                </form>
+            </div>
+            
+            <div class="footer">
+                &copy; 2023 RIPPLR. All rights reserved.
+            </div>
+        </div>
+        
+        <!-- Forgot Password View -->
+        <div class="view hidden-view" id="forgot-password-view">
+            <div class="header">
+                <div class="logo">RIPPLR</div>
+                <div class="tagline">No Delay</div>
+            </div>
+            
+            <a class="back-to-login" id="back-to-login"><i class="fas fa-arrow-left"></i> Back to login</a>
+            
+            <div class="login-card">
+                <h1 class="welcome-text">Reset Password</h1>
+                <p class="instruction">Enter your email to receive a reset link.</p>
+                
+                <form id="reset-form">
+                    <div class="form-group">
+                        <label for="reset-email">Email address</label>
+                        <div class="input-with-icon">
+                            <i class="input-icon fas fa-envelope"></i>
+                            <input type="email" id="reset-email" placeholder="Enter your email" autocomplete="off">
+                        </div>
+                        <div class="error-message" id="reset-email-error">Please enter a valid email address</div>
+                    </div>
+                    
+                    <button type="submit" class="sign-in-btn">Send Reset Link</button>
+                    
+                    <div class="success-message" id="reset-success">
+                        <i class="fas fa-check-circle"></i> Reset link sent to your email!
+                    </div>
+                </form>
+            </div>
+            
+            <div class="footer">
+                &copy; 2025 RIPPLR. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const resetForm = document.getElementById('reset-form');
+            const userIdInput = document.getElementById('user-id');
+            const passwordInput = document.getElementById('password');
+            const resetEmailInput = document.getElementById('reset-email');
+            const userIdError = document.getElementById('user-id-error');
+            const passwordError = document.getElementById('password-error');
+            const resetEmailError = document.getElementById('reset-email-error');
+            const resetSuccess = document.getElementById('reset-success');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            const backToLogin = document.getElementById('back-to-login');
+            const loginView = document.getElementById('login-view');
+            const forgotPasswordView = document.getElementById('forgot-password-view');
+            const signinbtn = document.querySelector('.sign-in-btn');
+            
+            // Set default values for demonstration
+            userIdInput.value = 'anjali.admin@ripplr.com';
+            
+            // Validate email format
+            function isValidEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // Switch to forgot password view
+            forgotPasswordLink.addEventListener('click', function() {
+                loginView.classList.remove('active-view');
+                loginView.classList.add('hidden-view');
+                forgotPasswordView.classList.remove('hidden-view');
+                forgotPasswordView.classList.add('active-view');
+            });
+            
+            // Switch back to login view
+            backToLogin.addEventListener('click', function() {
+                forgotPasswordView.classList.remove('active-view');
+                forgotPasswordView.classList.add('hidden-view');
+                loginView.classList.remove('hidden-view');
+                loginView.classList.add('active-view');
+            });
+            
+            // Login form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                // Validate user id (email format)
+                if (!userIdInput.value || !isValidEmail(userIdInput.value)) {
+                    userIdError.textContent = 'Please enter a valid email address';
+                    userIdError.style.display = 'block';
+                    userIdInput.classList.add('input-error');
+                    isValid = false;
+                } else {
+                    userIdError.style.display = 'none';
+                    userIdInput.classList.remove('input-error');
+                }
+                
+                // Validate password
+                if (!passwordInput.value) {
+                    passwordError.style.display = 'block';
+                    passwordInput.classList.add('input-error');
+                    isValid = false;
+                } else {
+                    passwordError.style.display = 'none';
+                    passwordInput.classList.remove('input-error');
+                }
+                
+                if (isValid) {
+                    // Simulate login process
+                    const submitBtn = loginForm.querySelector('button');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+                    submitBtn.disabled = true;
+                    
+                    setTimeout(function() {
+                        alert('Login successful! Welcome back, ' + userIdInput.value);
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 1500);
+                }
+            });
+            
+            // Reset form submission
+            resetForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                // Validate email
+                if (!resetEmailInput.value || !isValidEmail(resetEmailInput.value)) {
+                    resetEmailError.style.display = 'block';
+                    resetEmailInput.classList.add('input-error');
+                    isValid = false;
+                } else {
+                    resetEmailError.style.display = 'none';
+                    resetEmailInput.classList.remove('input-error');
+                }
+                
+                if (isValid) {
+                    // Simulate reset process
+                    const submitBtn = resetForm.querySelector('button');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                    submitBtn.disabled = true;
+                    
+                    setTimeout(function() {
+                        resetSuccess.style.display = 'block';
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        
+                        // Hide success message after 5 seconds
+                        setTimeout(function() {
+                            resetSuccess.style.display = 'none';
+                        }, 5000);
+                    }, 1500);
+                }
+            });
+            
+            // Clear errors when user starts typing
+            userIdInput.addEventListener('input', function() {
+                userIdError.style.display = 'none';
+                userIdInput.classList.remove('input-error');
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                passwordError.style.display = 'none';
+                passwordInput.classList.remove('input-error');
+            });
+            resetEmailInput.addEventListener('input', function() {
+                resetEmailError.style.display = 'none';
+                resetEmail.classList.remove('input-error');
+            });
+        });
+        signinbtn.addEventListener('click', function() {
+            window.location.href = "index2.html";
+        });
+        </script>
+        </body>
+        </html>
